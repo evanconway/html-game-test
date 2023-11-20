@@ -11,7 +11,28 @@ const CANVAS_HEIGHT = canvas.height = 600;
 
 const scale = 10;
 
-let x = 0, y = 0;
+const controller = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+};
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp') controller.up = true;
+    if (e.key === 'ArrowDown') controller.down = true;
+    if (e.key === 'ArrowLeft') controller.left = true;
+    if (e.key === 'ArrowRight') controller.right = true;
+});
+
+document.addEventListener('keyup', e => {
+    if (e.key === 'ArrowUp') controller.up = false;
+    if (e.key === 'ArrowDown') controller.down = false;
+    if (e.key === 'ArrowLeft') controller.left = false;
+    if (e.key === 'ArrowRight') controller.right = false;
+});
+
+const playerPos = { x: 0, y: 0 };
 
 requestAnimationFrame(() => {
     if (ctx === null) return;
@@ -21,8 +42,14 @@ requestAnimationFrame(() => {
 
 const animate = () => {
     if (ctx === null) return;
+    const vel = 1;
+    if (controller.up) playerPos.y -= vel;
+    if (controller.down) playerPos.y += vel;
+    if (controller.left) playerPos.x -= vel;
+    if (controller.right) playerPos.x += vel;
+
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    ctx.drawImage(image, x, y);
+    ctx.drawImage(image, playerPos.x, playerPos.y);
     requestAnimationFrame(animate);
 };
 
