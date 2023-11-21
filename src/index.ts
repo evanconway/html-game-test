@@ -1,9 +1,10 @@
 const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
-//const htmlRoot = document.getElementById('root') as HTMLElement;
 
 const GAME_WIDTH = 320;
 const GAME_HEIGHT = 180;
+
+const getScale = () => canvas.width / GAME_WIDTH;
 
 /**
  * Scales the game window to the maximum amount given the window size. Note that
@@ -22,13 +23,15 @@ const resize = () => {
     }
     canvas.style.width = canvas.width + 'px';
     canvas.style.height = canvas.height + 'px';
+
+    // when canvas size changes, change the scale and remove image smoothing (anti-aliasing)
+    requestAnimationFrame(() => {
+        ctx.scale(getScale(), getScale());
+        ctx.imageSmoothingEnabled = false;
+    });
 };
 window.addEventListener('resize', resize);
 resize();
-
-const getScale = () => {
-    return canvas.width / GAME_WIDTH;
-};
 
 const image = new Image();
 
@@ -57,11 +60,6 @@ document.addEventListener('keyup', e => {
 
 const playerPos = { x: 0, y: 0 };
 
-requestAnimationFrame(() => {
-    ctx.scale(getScale(), getScale());
-    ctx.imageSmoothingEnabled = false;
-});
-
 const animate = () => {
     const vel = 1;
     if (controller.up) playerPos.y -= vel;
@@ -69,10 +67,15 @@ const animate = () => {
     if (controller.left) playerPos.x -= vel;
     if (controller.right) playerPos.x += vel;
 
+    if (!controller.up && !controller.down && !controller.left && !controller.right) {
+        playerPos.x = Math.floor(playerPos.x);
+        playerPos.y = Math.floor(playerPos.y);
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(image, playerPos.x, playerPos.y);
+    ctx.drawImage(image, Math.floor(playerPos.x), Math.floor(playerPos.y));
     requestAnimationFrame(animate);
 };
 
