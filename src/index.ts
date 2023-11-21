@@ -1,18 +1,38 @@
 const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
+//const htmlRoot = document.getElementById('root') as HTMLElement;
 
+const GAME_WIDTH = 320;
+const GAME_HEIGHT = 180;
+
+/**
+ * Scales the game window to the maximum amount given the window size. Note that
+ * we set the width/height of the canvas AND the style.width/height. The attribute
+ * decides the interal resolution of the canvas. But the style.width/height decides
+ * how the canvas element is drawn in the browser.
+ */
 const resize = () => {
-    canvas.style.height = `${canvas.offsetWidth * (9/16)}px`;
-    console.log(`width: ${canvas.offsetWidth}, height: ${canvas.offsetHeight}`);
+    const heightCalculatedFromWidth = window.innerWidth * (GAME_HEIGHT / GAME_WIDTH);
+    if (heightCalculatedFromWidth <= window.innerHeight) {
+        canvas.width = Math.floor(window.innerWidth);
+        canvas.height = Math.floor(heightCalculatedFromWidth);
+    } else {
+        canvas.width = Math.floor(window.innerHeight * (GAME_WIDTH / GAME_HEIGHT));
+        canvas.height = Math.floor(window.innerHeight);
+    }
+    canvas.style.width = canvas.width + 'px';
+    canvas.style.height = canvas.height + 'px';
 };
+window.addEventListener('resize', resize);
+resize();
 
-new ResizeObserver(resize).observe(canvas);
+const getScale = () => {
+    return canvas.width / GAME_WIDTH;
+};
 
 const image = new Image();
 
 image.src = '../src/assets/character.png';
-
-const scale = 2;
 
 const controller = {
     up: false,
@@ -38,7 +58,7 @@ document.addEventListener('keyup', e => {
 const playerPos = { x: 0, y: 0 };
 
 requestAnimationFrame(() => {
-    ctx.scale(scale, scale);
+    ctx.scale(getScale(), getScale());
     ctx.imageSmoothingEnabled = false;
 });
 

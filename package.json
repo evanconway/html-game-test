@@ -4,7 +4,8 @@
   "description": "Testing out game making in html.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tsc --watch"
   },
   "author": "",
   "license": "ISC",
