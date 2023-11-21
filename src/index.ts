@@ -1,15 +1,18 @@
-console.log('ts file ran');
 const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d')!;
+
+const resize = () => {
+    canvas.style.height = `${canvas.offsetWidth * (9/16)}px`;
+    console.log(`width: ${canvas.offsetWidth}, height: ${canvas.offsetHeight}`);
+};
+
+new ResizeObserver(resize).observe(canvas);
 
 const image = new Image();
 
 image.src = '../src/assets/character.png';
 
-const CANVAS_WIDTH = canvas.width = 600;
-const CANVAS_HEIGHT = canvas.height = 600;
-
-const scale = 10;
+const scale = 2;
 
 const controller = {
     up: false,
@@ -35,20 +38,20 @@ document.addEventListener('keyup', e => {
 const playerPos = { x: 0, y: 0 };
 
 requestAnimationFrame(() => {
-    if (ctx === null) return;
     ctx.scale(scale, scale);
     ctx.imageSmoothingEnabled = false;
 });
 
 const animate = () => {
-    if (ctx === null) return;
     const vel = 1;
     if (controller.up) playerPos.y -= vel;
     if (controller.down) playerPos.y += vel;
     if (controller.left) playerPos.x -= vel;
     if (controller.right) playerPos.x += vel;
 
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(image, playerPos.x, playerPos.y);
     requestAnimationFrame(animate);
 };
