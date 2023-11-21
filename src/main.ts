@@ -10,7 +10,7 @@ canvasImages.height = GAME_HEIGHT;
 
 const canvasText: HTMLCanvasElement = document.getElementById('canvas-text') as HTMLCanvasElement;
 const ctxText = canvasText.getContext('2d')!;
-const textScale = 5;
+const textScale = 1;
 canvasText.width = GAME_WIDTH * textScale;
 canvasText.height = GAME_HEIGHT * textScale;
 
@@ -76,14 +76,14 @@ const gameUpdate = () => {
 
 const clearCanvasImage = () => {
     ctxImages.clearRect(0, 0, canvasImages.width, canvasImages.height);
-    ctxImages.fillStyle = 'white';
+    ctxImages.fillStyle = 'black';
     ctxImages.fillRect(0, 0, canvasImages.width, canvasImages.height);
 };
 
 const clearCanvasText = () => {
     ctxText.clearRect(0, 0, canvasText.width, canvasText.height);
-    ctxText.fillStyle = 'black';
-    ctxText.font = '36px sans-serif';
+    ctxText.fillStyle = 'white';
+    ctxText.font = '12px courier';
 };
 
 /**
@@ -95,12 +95,12 @@ const clearCanvasText = () => {
  * @param y 
  * @param maxWidth 
  */
-const drawText = (text: string, x: number, y: number, maxWidth = 1000, spaceBetweenLines = 2) => {
+const drawText = (text: string, x: number, y: number, maxWidth = 200, spaceBetweenLines = 2) => {
     const words = text.split(' ');
     const lines: Array<string> = [words[0]];
     for (let i = 1; i < words.length; i++) {
         const wordWidth = ctxText.measureText(' ' + words[i]).width;
-        if (ctxText.measureText(lines[lines.length - 1] + wordWidth).width < maxWidth) {
+        if (ctxText.measureText(lines[lines.length - 1] + wordWidth).width < maxWidth * textScale) {
             lines[lines.length - 1] += (' ' + words[i]);
         } else {
             lines.push(words[i]);
