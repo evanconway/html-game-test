@@ -1,3 +1,5 @@
+const mobyDick = 'Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to sea as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the ship. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the ocean with me.';
+
 const GAME_WIDTH = 320;
 const GAME_HEIGHT = 180;
 
@@ -84,16 +86,40 @@ const clearCanvasText = () => {
     ctxText.font = '36px sans-serif';
 };
 
-const drawText = (text: string, x: number, y: number) => {
-    ctxText.fillText(text, Math.floor(x * textScale), Math.floor(y * textScale));
+/**
+ * Draws text accounting for line breaks given a maxWidth. Removes consecutive
+ * spaces. (because that was easier to program)
+ * 
+ * @param text 
+ * @param x 
+ * @param y 
+ * @param maxWidth 
+ */
+const drawText = (text: string, x: number, y: number, maxWidth = 1000, spaceBetweenLines = 2) => {
+    const words = text.split(' ');
+    const lines: Array<string> = [words[0]];
+    for (let i = 1; i < words.length; i++) {
+        const wordWidth = ctxText.measureText(' ' + words[i]).width;
+        if (ctxText.measureText(lines[lines.length - 1] + wordWidth).width < maxWidth) {
+            lines[lines.length - 1] += (' ' + words[i]);
+        } else {
+            lines.push(words[i]);
+        }
+    }
+    const measurement = ctxText.measureText(text);
+    const lineHeight = measurement.actualBoundingBoxAscent + measurement.actualBoundingBoxDescent;
+    lines.forEach((line, i) => {
+        ctxText.fillText(line, Math.floor(x * textScale), Math.floor(y * textScale + lineHeight * i + spaceBetweenLines * i));
+    });
 };
 
 const animate = () => {
-    clearCanvasImage();
-    clearCanvasText();
     gameUpdate();
+    clearCanvasImage();
     ctxImages.drawImage(image, Math.round(playerPos.x), Math.round(playerPos.y));
-    drawText('hello world', GAME_WIDTH / 2, GAME_HEIGHT / 2);
+    clearCanvasText();
+    ctxText.textAlign = 'center';
+    drawText(mobyDick, GAME_WIDTH / 2, 20);
     requestAnimationFrame(animate);
 };
 
