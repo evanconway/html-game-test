@@ -1,10 +1,11 @@
-const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d')!;
-
 const GAME_WIDTH = 320;
 const GAME_HEIGHT = 180;
 
-const getScale = () => canvas.width / GAME_WIDTH;
+const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d')!;
+
+canvas.width = GAME_WIDTH;
+canvas.height = GAME_HEIGHT;
 
 /**
  * Scales the game window to the maximum amount given the window size. Note that
@@ -15,20 +16,12 @@ const getScale = () => canvas.width / GAME_WIDTH;
 const resize = () => {
     const heightCalculatedFromWidth = window.innerWidth * (GAME_HEIGHT / GAME_WIDTH);
     if (heightCalculatedFromWidth <= window.innerHeight) {
-        canvas.width = Math.floor(window.innerWidth);
-        canvas.height = Math.floor(heightCalculatedFromWidth);
+        canvas.style.width = Math.floor(window.innerWidth) + 'px';
+        canvas.style.height = Math.floor(heightCalculatedFromWidth) + 'px';
     } else {
-        canvas.width = Math.floor(window.innerHeight * (GAME_WIDTH / GAME_HEIGHT));
-        canvas.height = Math.floor(window.innerHeight);
+        canvas.style.width = Math.floor(window.innerHeight * (GAME_WIDTH / GAME_HEIGHT)) + 'px';
+        canvas.style.height = Math.floor(window.innerHeight) + 'px';
     }
-    canvas.style.width = canvas.width + 'px';
-    canvas.style.height = canvas.height + 'px';
-
-    // when canvas size changes, change the scale and remove image smoothing (anti-aliasing)
-    requestAnimationFrame(() => {
-        ctx.scale(getScale(), getScale());
-        ctx.imageSmoothingEnabled = false;
-    });
 };
 window.addEventListener('resize', resize);
 resize();
@@ -61,21 +54,23 @@ document.addEventListener('keyup', e => {
 const playerPos = { x: 0, y: 0 };
 
 const animate = () => {
-    const vel = 1;
+    const vel = 0.5;
     if (controller.up) playerPos.y -= vel;
     if (controller.down) playerPos.y += vel;
     if (controller.left) playerPos.x -= vel;
     if (controller.right) playerPos.x += vel;
 
     if (!controller.up && !controller.down && !controller.left && !controller.right) {
-        playerPos.x = Math.floor(playerPos.x);
-        playerPos.y = Math.floor(playerPos.y);
+        playerPos.x = Math.round(playerPos.x);
+        playerPos.y = Math.round(playerPos.y);
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(image, Math.floor(playerPos.x), Math.floor(playerPos.y));
+    ctx.drawImage(image, Math.round(playerPos.x), Math.round(playerPos.y));
+    ctx.fillStyle = 'black';
+    ctx.fillText('hello world', 50, 50);
     requestAnimationFrame(animate);
 };
 
