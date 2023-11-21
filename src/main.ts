@@ -10,9 +10,9 @@ canvas.height = GAME_HEIGHT;
 
 /**
  * Scales the game window to the maximum amount given the window size. Note that
- * we set the width/height of the canvas AND the style.width/height. The attribute
- * decides the interal resolution of the canvas. But the style.width/height decides
- * how the canvas element is drawn in the browser.
+ * we set the style.width/height. The width/height attribute decides the interal 
+ * resolution of the canvas. But the style.width/height decides how the canvas 
+ * element is drawn in the browser.
  */
 const resize = () => {
     const heightCalculatedFromWidth = window.innerWidth * (GAME_HEIGHT / GAME_WIDTH);
@@ -31,12 +31,7 @@ const image = new Image();
 
 image.src = '../src/assets/character.png';
 
-const controller = {
-    up: false,
-    down: false,
-    left: false,
-    right: false,
-};
+const controller = { up: false, down: false, left: false, right: false };
 
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowUp') controller.up = true;
@@ -52,21 +47,20 @@ document.addEventListener('keyup', e => {
     if (e.key === 'ArrowRight') controller.right = false;
 });
 
-const playerPos = { x: 0, y: 0 };
+const player = { x: 0, y: 0, vel: 0.5 };
 
 const gameUpdate = () => {
-    const vel = 0.5;
-    if (controller.up) playerPos.y -= vel;
-    if (controller.down) playerPos.y += vel;
-    if (controller.left) playerPos.x -= vel;
-    if (controller.right) playerPos.x += vel;
+    if (controller.up) player.y -= player.vel;
+    if (controller.down) player.y += player.vel;
+    if (controller.left) player.x -= player.vel;
+    if (controller.right) player.x += player.vel;
     if (!controller.up && !controller.down && !controller.left && !controller.right) {
-        playerPos.x = Math.round(playerPos.x);
-        playerPos.y = Math.round(playerPos.y);
+        player.x = Math.round(player.x);
+        player.y = Math.round(player.y);
     }
 };
 
-const clearCanvasImage = () => {
+const clearCanvas = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -84,7 +78,6 @@ const clearCanvasImage = () => {
  * @param maxWidth 
  */
 const drawText = (text: string, x: number, y: number, maxWidth = 200, spaceBetweenLines = 2) => {
-    ctx.fillStyle = 'white';
     const words = text.split(' ');
     const lines: Array<string> = [words[0]];
     for (let i = 1; i < words.length; i++) {
@@ -104,8 +97,8 @@ const drawText = (text: string, x: number, y: number, maxWidth = 200, spaceBetwe
 
 const animate = () => {
     gameUpdate();
-    clearCanvasImage();
-    ctx.drawImage(image, Math.round(playerPos.x), Math.round(playerPos.y));
+    clearCanvas();
+    ctx.drawImage(image, Math.round(player.x), Math.round(player.y));
     ctx.textAlign = 'center';
     drawText(mobyDick, GAME_WIDTH / 2, 20);
     requestAnimationFrame(animate);
