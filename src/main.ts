@@ -3,16 +3,10 @@ import { mobyDick } from "./other";
 const GAME_WIDTH = 320;
 const GAME_HEIGHT = 180;
 
-const canvasImages: HTMLCanvasElement = document.getElementById('canvas-images') as HTMLCanvasElement;
-const ctxImages = canvasImages.getContext('2d')!;
-canvasImages.width = GAME_WIDTH;
-canvasImages.height = GAME_HEIGHT;
-
-const canvasText: HTMLCanvasElement = document.getElementById('canvas-text') as HTMLCanvasElement;
-const ctxText = canvasText.getContext('2d')!;
-const textScale = 1;
-canvasText.width = GAME_WIDTH * textScale;
-canvasText.height = GAME_HEIGHT * textScale;
+const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d')!;
+canvas.width = GAME_WIDTH;
+canvas.height = GAME_HEIGHT;
 
 /**
  * Scales the game window to the maximum amount given the window size. Note that
@@ -23,14 +17,12 @@ canvasText.height = GAME_HEIGHT * textScale;
 const resize = () => {
     const heightCalculatedFromWidth = window.innerWidth * (GAME_HEIGHT / GAME_WIDTH);
     if (heightCalculatedFromWidth <= window.innerHeight) {
-        canvasImages.style.width = Math.floor(window.innerWidth) + 'px';
-        canvasImages.style.height = Math.floor(heightCalculatedFromWidth) + 'px';
+        canvas.style.width = Math.floor(window.innerWidth) + 'px';
+        canvas.style.height = Math.floor(heightCalculatedFromWidth) + 'px';
     } else {
-        canvasImages.style.width = Math.floor(window.innerHeight * (GAME_WIDTH / GAME_HEIGHT)) + 'px';
-        canvasImages.style.height = Math.floor(window.innerHeight) + 'px';
+        canvas.style.width = Math.floor(window.innerHeight * (GAME_WIDTH / GAME_HEIGHT)) + 'px';
+        canvas.style.height = Math.floor(window.innerHeight) + 'px';
     }
-    canvasText.style.width = canvasImages.style.width;
-    canvasText.style.height = canvasImages.style.height;
 };
 window.addEventListener('resize', resize);
 resize();
@@ -75,15 +67,11 @@ const gameUpdate = () => {
 };
 
 const clearCanvasImage = () => {
-    ctxImages.clearRect(0, 0, canvasImages.width, canvasImages.height);
-    ctxImages.fillStyle = 'black';
-    ctxImages.fillRect(0, 0, canvasImages.width, canvasImages.height);
-};
-
-const clearCanvasText = () => {
-    ctxText.clearRect(0, 0, canvasText.width, canvasText.height);
-    ctxText.fillStyle = 'white';
-    ctxText.font = '12px courier';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    ctx.font = '12px courier';
 };
 
 /**
@@ -96,29 +84,29 @@ const clearCanvasText = () => {
  * @param maxWidth 
  */
 const drawText = (text: string, x: number, y: number, maxWidth = 200, spaceBetweenLines = 2) => {
+    ctx.fillStyle = 'white';
     const words = text.split(' ');
     const lines: Array<string> = [words[0]];
     for (let i = 1; i < words.length; i++) {
-        const wordWidth = ctxText.measureText(' ' + words[i]).width;
-        if (ctxText.measureText(lines[lines.length - 1] + wordWidth).width < maxWidth * textScale) {
+        const wordWidth = ctx.measureText(' ' + words[i]).width;
+        if (ctx.measureText(lines[lines.length - 1] + wordWidth).width < maxWidth) {
             lines[lines.length - 1] += (' ' + words[i]);
         } else {
             lines.push(words[i]);
         }
     }
-    const measurement = ctxText.measureText(text);
+    const measurement = ctx.measureText(text);
     const lineHeight = measurement.actualBoundingBoxAscent + measurement.actualBoundingBoxDescent;
     lines.forEach((line, i) => {
-        ctxText.fillText(line, Math.floor(x * textScale), Math.floor(y * textScale + lineHeight * i + spaceBetweenLines * i));
+        ctx.fillText(line, Math.floor(x), Math.floor(y + lineHeight * i + spaceBetweenLines * i));
     });
 };
 
 const animate = () => {
     gameUpdate();
     clearCanvasImage();
-    ctxImages.drawImage(image, Math.round(playerPos.x), Math.round(playerPos.y));
-    clearCanvasText();
-    ctxText.textAlign = 'center';
+    ctx.drawImage(image, Math.round(playerPos.x), Math.round(playerPos.y));
+    ctx.textAlign = 'center';
     drawText(mobyDick, GAME_WIDTH / 2, 20);
     requestAnimationFrame(animate);
 };
