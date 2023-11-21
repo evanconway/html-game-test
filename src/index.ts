@@ -3,9 +3,14 @@ const GAME_HEIGHT = 180;
 
 const canvasImages: HTMLCanvasElement = document.getElementById('canvas-images') as HTMLCanvasElement;
 const ctxImages = canvasImages.getContext('2d')!;
-
 canvasImages.width = GAME_WIDTH;
 canvasImages.height = GAME_HEIGHT;
+
+const canvasText: HTMLCanvasElement = document.getElementById('canvas-text') as HTMLCanvasElement;
+const ctxText = canvasText.getContext('2d')!;
+const textScale = 5;
+canvasText.width = GAME_WIDTH * textScale;
+canvasText.height = GAME_HEIGHT * textScale;
 
 /**
  * Scales the game window to the maximum amount given the window size. Note that
@@ -22,6 +27,8 @@ const resize = () => {
         canvasImages.style.width = Math.floor(window.innerHeight * (GAME_WIDTH / GAME_HEIGHT)) + 'px';
         canvasImages.style.height = Math.floor(window.innerHeight) + 'px';
     }
+    canvasText.style.width = canvasImages.style.width;
+    canvasText.style.height = canvasImages.style.height;
 };
 window.addEventListener('resize', resize);
 resize();
@@ -71,13 +78,22 @@ const clearCanvasImage = () => {
     ctxImages.fillRect(0, 0, canvasImages.width, canvasImages.height);
 };
 
+const clearCanvasText = () => {
+    ctxText.clearRect(0, 0, canvasText.width, canvasText.height);
+    ctxText.fillStyle = 'black';
+    ctxText.font = '36px sans-serif';
+};
+
+const drawText = (text: string, x: number, y: number) => {
+    ctxText.fillText(text, Math.floor(x * textScale), Math.floor(y * textScale));
+};
+
 const animate = () => {
     clearCanvasImage();
+    clearCanvasText();
     gameUpdate();
-
     ctxImages.drawImage(image, Math.round(playerPos.x), Math.round(playerPos.y));
-    ctxImages.fillStyle = 'black';
-    ctxImages.fillText('hello world', 50, 50);
+    drawText('hello world', GAME_WIDTH / 2, GAME_HEIGHT / 2);
     requestAnimationFrame(animate);
 };
 
